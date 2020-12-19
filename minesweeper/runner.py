@@ -2,11 +2,11 @@ import sys
 import time
 import pygame
 
-from minesweeper import Minesweeper, MinesweeperAI
+from minesweeper import Minesweeper, MinesweeperAI, Sentence####################################
 
-HEIGHT = 8
-WIDTH = 8
-MINES = 8
+HEIGHT = 3######################################################################################
+WIDTH = 3#######################################################################################
+MINES = 1#######################################################################################
 
 # Colors
 BLACK = (0, 0, 0)
@@ -39,10 +39,19 @@ mine = pygame.transform.scale(mine, (cell_size, cell_size))
 
 # Create game and AI agent
 game = Minesweeper(height=HEIGHT, width=WIDTH, mines=MINES)
-game.print()
-print(game.is_mine((3, 5)))
-print(game.nearby_mines((3, 5)))
-print(game.won())
+game.print()###########################################################################################################
+print(game.is_mine((1, 1)))############################################################################################
+print(game.nearby_mines((1, 1)))#######################################################################################
+print(game.won())######################################################################################################
+x = Sentence(((0, 0), (0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1), (2, 2)), 0)######################################
+print(x.count)#########################################################################################################
+# print(x.known_mines())#################################################################################################
+# for i in x.known_mines():
+#     print (i)
+print(x.known_safes())
+for j in x.known_safes():
+    print(j)
+
 ai = MinesweeperAI(height=HEIGHT, width=WIDTH)
 
 # Keep track of revealed cells, flagged cells, and if a mine was hit

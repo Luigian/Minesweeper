@@ -7,7 +7,7 @@ class Minesweeper():
     Minesweeper game representation
     """
 
-    def __init__(self, height=8, width=8, mines=8):
+    def __init__(self, height=3, width=3, mines=1):#######################################################################
 
         # Set initial width, height, and number of mines
         self.height = height
@@ -21,16 +21,20 @@ class Minesweeper():
             for j in range(self.width):
                 row.append(False)
             self.board.append(row)
-        print(self.board)
+        print(self.board)#############################################################################
 
         # Add mines randomly
+        """
         while len(self.mines) != mines:
             i = random.randrange(height)
             j = random.randrange(width)
             if not self.board[i][j]:
                 self.mines.add((i, j))
                 self.board[i][j] = True
-        print(self.board)
+        """############################################################################################
+        self.mines.add((1, 1))#########################################################################
+        self.board[1][1] = True########################################################################
+        print(self.board)##############################################################################
 
         # At first, player has found no mines
         self.mines_found = set()
@@ -107,13 +111,21 @@ class Sentence():
         """
         Returns the set of all cells in self.cells known to be mines.
         """
-        raise NotImplementedError
+        mines = set()
+        if len(self.cells) == self.count:
+            for cell in self.cells:
+                mines.add(cell)
+        return mines
 
     def known_safes(self):
         """
         Returns the set of all cells in self.cells known to be safe.
         """
-        raise NotImplementedError
+        safes = set()
+        if not self.count:
+            for cell in self.cells:
+                safes.add(cell)
+        return safes
 
     def mark_mine(self, cell):
         """
