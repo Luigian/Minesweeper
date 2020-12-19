@@ -39,18 +39,21 @@ mine = pygame.transform.scale(mine, (cell_size, cell_size))
 
 # Create game and AI agent
 game = Minesweeper(height=HEIGHT, width=WIDTH, mines=MINES)
-game.print()###########################################################################################################
-print(game.is_mine((1, 1)))############################################################################################
-print(game.nearby_mines((1, 1)))#######################################################################################
-print(game.won())######################################################################################################
-x = Sentence(((0, 0), (0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1), (2, 2)), 0)######################################
-print(x.count)#########################################################################################################
-# print(x.known_mines())#################################################################################################
-# for i in x.known_mines():
-#     print (i)
-print(x.known_safes())
-for j in x.known_safes():
-    print(j)
+game.print()
+sen = Sentence(((0, 0), (0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1), (2, 2)), 0)
+print(sen.cells)
+print(sen.count)
+print(sen.known_mines())
+print(sen.known_safes())
+sen.mark_mine((0, 0))
+# sen.mark_mine((1, 1))
+print(sen.cells)
+print(sen.count)
+sen.mark_safe((2, 2))
+# sen.mark_safe((0, 0))
+print(sen.cells)
+print(sen.count)
+
 
 ai = MinesweeperAI(height=HEIGHT, width=WIDTH)
 
