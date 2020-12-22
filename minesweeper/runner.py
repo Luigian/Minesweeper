@@ -249,8 +249,8 @@ while True:
         else:
             nearby = game.nearby_mines(move)
             revealed.add(move)
-            ai.add_knowledge(move, nearby)
             print("-----------------------")
+            ai.add_knowledge(move, nearby)
             print(f"moves_made: {ai.moves_made}")
             print(f"mines: {ai.mines}")
             print(f"safes: {ai.safes}")

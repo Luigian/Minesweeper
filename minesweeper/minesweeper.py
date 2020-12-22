@@ -215,16 +215,34 @@ class MinesweeperAI():
             self.knowledge.append(new_sentence)
         
         
-        for i in range(10):
+        # for i in range(10):
+        while True:
+            
+            x = False
+            
+            print(len(self.knowledge))
             for sentence in self.knowledge:
-                
-                for safe in sentence.known_safes():
-                    self.mark_safe(safe)
-                    
-                for mine in sentence.known_mines():
-                    self.mark_mine(mine)
-                
-                if not sentence.count:
+
+                if len(sentence.cells) == sentence.count == 1:
+                    continue
+
+                t = sentence.known_safes()
+                print(f"t {len(t)}")
+                if len(t):
+                    for safe in sentence.known_safes():
+                        self.mark_safe(safe)
+                    x = True
+
+                z = sentence.known_mines()
+                print(f"z {len(z)}")
+                if len(z):
+                    for mine in sentence.known_mines():
+                        self.mark_mine(mine)
+                    x = True
+
+
+            for sentence in self.knowledge:
+                if not len(sentence.cells):
                     self.knowledge.remove(sentence)
             
             for sentence in self.knowledge:
@@ -234,6 +252,12 @@ class MinesweeperAI():
                     if sentence.cells.issubset(other.cells):
                         other.count -= sentence.count
                         other.cells.difference_update(sentence.cells)
+                        print("y")
+                        x = True
+            
+            print(x)
+            if not x:
+                break
             
        
                     
