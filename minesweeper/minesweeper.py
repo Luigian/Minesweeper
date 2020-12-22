@@ -131,8 +131,9 @@ class Sentence():
         a cell is known to be a mine.
         """
         if cell in self.cells:
-            self.cells.remove(cell)
-            self.count -= 1
+            if len(self.cells) != 1:
+                self.cells.remove(cell)
+                self.count -= 1
 
     def mark_safe(self, cell):
         """
@@ -197,7 +198,63 @@ class MinesweeperAI():
             5) add any new sentences to the AI's knowledge base
                if they can be inferred from existing knowledge
         """
-        raise NotImplementedError
+        self.moves_made.add(cell)
+        self.mark_safe(cell)
+
+        neighbors = set()
+        for i in range(cell[0] - 1, cell[0] + 2):
+            for j in range(cell[1] - 1, cell[1] + 2):
+                if (i, j) == cell:
+                    continue
+                if 0 <= i < self.height and 0 <= j < self.width:
+                    if (i, j) not in self.safes:
+                        neighbors.add((i, j))
+        
+        new_sentence = Sentence(neighbors, count)
+        if new_sentence not in self.knowledge:
+            self.knowledge.append(new_sentence)
+        
+        
+        for i in range(10):
+            for sentence in self.knowledge:
+                
+                for safe in sentence.known_safes():
+                    self.mark_safe(safe)
+                    
+                for mine in sentence.known_mines():
+                    self.mark_mine(mine)
+                
+                if not sentence.count:
+                    self.knowledge.remove(sentence)
+            
+            for sentence in self.knowledge:
+                for other in self.knowledge:
+                    if sentence is other:
+                        continue
+                    if sentence.cells.issubset(other.cells):
+                        other.count -= sentence.count
+                        other.cells.difference_update(sentence.cells)
+            
+       
+                    
+        """
+        for sentence in self.knowledge:
+            for mine in sentence.known_mines():
+                self.mark_mine(mine)
+            for safe in sentence.known_safes():
+                self.mark_safe(safe)
+            if not sentence.count:
+                self.knowledge.remove(sentence)
+        """
+
+        # for sentence in self.knowledge:
+        #     for other in self.knowledge:
+        #         if sentence is not other:
+        #             if sentence == other:
+        #                 self.knowledge.remove(sentence)
+                        
+
+        
 
     def make_safe_move(self):
         """
