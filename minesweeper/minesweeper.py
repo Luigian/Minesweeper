@@ -7,7 +7,7 @@ class Minesweeper():
     Minesweeper game representation
     """
 
-    def __init__(self, height=3, width=3, mines=1):#######################################################################
+    def __init__(self, height=8, width=8, mines=8):
 
         # Set initial width, height, and number of mines
         self.height = height
@@ -23,16 +23,12 @@ class Minesweeper():
             self.board.append(row)
 
         # Add mines randomly
-        """
         while len(self.mines) != mines:
             i = random.randrange(height)
             j = random.randrange(width)
             if not self.board[i][j]:
                 self.mines.add((i, j))
                 self.board[i][j] = True
-        """############################################################################################
-        self.mines.add((1, 1))#########################################################################
-        self.board[1][1] = True########################################################################
 
         # At first, player has found no mines
         self.mines_found = set()
@@ -148,7 +144,7 @@ class MinesweeperAI():
     Minesweeper game player
     """
 
-    def __init__(self, height=8, width=8):
+    def __init__(self, height=3, width=3):
 
         # Set initial height and width
         self.height = height
@@ -239,7 +235,6 @@ class MinesweeperAI():
                         other.count -= sentence.count
                         other.cells.difference_update(sentence.cells)
                         if not x: x = True
-            
 
     def make_safe_move(self):
         """
@@ -250,7 +245,10 @@ class MinesweeperAI():
         This function may use the knowledge in self.mines, self.safes
         and self.moves_made, but should not modify any of those values.
         """
-        raise NotImplementedError
+        for cell in self.safes:
+            if cell not in self.moves_made:
+                return cell
+        return None
 
     def make_random_move(self):
         """
@@ -259,4 +257,12 @@ class MinesweeperAI():
             1) have not already been chosen, and
             2) are not known to be mines
         """
-        raise NotImplementedError
+        board = list()
+        for i in range(self.height):
+            for j in range(self.width):
+                if (i, j) not in self.moves_made and (i, j) not in self.mines:
+                    board.append((i, j))
+        if len(board):
+            return random.choice(board)
+        return None
+            
