@@ -39,9 +39,10 @@ mine = pygame.transform.scale(mine, (cell_size, cell_size))
 
 # Create game and AI agent
 game = Minesweeper(height=HEIGHT, width=WIDTH, mines=MINES)
-game.print()
-
 ai = MinesweeperAI(height=HEIGHT, width=WIDTH)
+
+# Print the game board
+# game.print()
 
 # Keep track of revealed cells, flagged cells, and if a mine was hit
 revealed = set()
@@ -220,12 +221,12 @@ while True:
             nearby = game.nearby_mines(move)
             revealed.add(move)
             ai.add_knowledge(move, nearby)
-            print("--------------------------------------------------------------")
-            print(f"mines: {ai.mines}")
-            print(f"safes: {ai.safes}")
-            for x in ai.knowledge:
-                print(x)
+            
+            # Print the AI knowledge
+            # print("----------------------------------------------------")
+            # print(f"mines: {ai.mines}")
+            # print(f"safes: {ai.safes}")
+            # for x in ai.knowledge:
+            #     print(x)
 
     pygame.display.flip()
-
-
