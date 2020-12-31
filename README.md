@@ -6,8 +6,6 @@
 
 Minesweeper is a puzzle game that consists of a grid of cells, where some of the cells contain hidden “mines.” Clicking on a cell that contains a mine detonates the mine, and causes the user to lose the game. Clicking on a “safe” cell reveals a number that indicates how many neighboring cells contain a mine. The goal of the game is to flag each of the mines.
 
-<img src="resources/puzzle.jpg" width="700">
-
 ## Propositional Logic
 
 Knowledge-based agents make decisions by considering their knowledge base, and making inferences based on that knowledge. One way we could represent an AI’s knowledge about a Minesweeper game is by making each cell a propositional variable that is true if the cell contains a mine, and false otherwise.
@@ -32,90 +30,55 @@ In general, we only want our sentences to be about cells that are not yet known 
 
 So using this method of representing knowledge, the AI agent can gather knowledge about the Minesweeper board, and select cells it knows to be safe.
 
----------------------------------------------------------------------------------------------------
-
-**Propositional Logic**
-
-Propositional logic is based on propositions, statements about the world that can be either true or false. It uses propositional symbols like letters (*P*, *Q*, *R*) to represent a proposition.
-
-To connect propositional symbols in order to reason in a more complex way it uses other logical symbols known as logical connectives:
-
-- **Not (¬)** inverses the truth value of the proposition.
-
-- **And (∧)** is true only in the case that both arguments are true.
-
-- **Or (∨)** is true as as long as either of its arguments is true.
-
-- **Implication (→)** represents a structure of "if *P* then *Q*". *P* is called the 'antecedent' and *Q* is called the 'consequent'.
-
-- **Biconditional (↔)** is an implication that goes both directions. Can be read as "if and only if". *P* ↔ *Q* is the same as *P* → *Q* and *Q* → *P* taken together.
-
-**Model Checking**
-
-A *model* is an assignment of a truth value to every proposition. Knowledge about the world is represented in the truth values of these propositions. The model is the truth-value assignment that provides information about the world.
-
-There could be more than one possible models. In fact, the number of possible models is 2 to the power of the number of propositions. If we have 2 propositions, that will be 2² = 4 possible models.
-
-The knowledge base (KB) is a set of sentences known by a knowledge-based agent. This is knowledge that the AI is provided about the world in the form of propositional logic sentences that can be used to make additional inferences about the world.
-
-Entailment is represented by the symbol (⊨). If *α* ⊨ *β* (*α* entails *β*), then in any world where *α* is true, *β* is true, too. Entailment is different from implication. Implication is a logical connective between two propositions. Entailment, on the other hand, is a relation that means that if all the information in *α* is true, then all the information in *β* is true.
-
-Inference is the process of deriving new sentences from old ones. There are multiple ways to infer new knowledge based on existing knowledge. One of these ways is the Model Checking algorithm.
-
-To determine if KB ⊨ *α* (in other words, answering the question: “can we conclude that *α* is true based on our knowledge base”):
-- Enumerate all possible models.
-- If in every model where KB is true, *α* is true as well, then KB entails *α* (KB ⊨ *α*).
-
-To run the Model Checking algorithm, the following information is needed:
-
-- Knowledge Base, which will be used to draw inferences.
-- A query, or the proposition that we are interested in whether it is entailed by the KB.
-- Symbols, a list of all the symbols used.
-- Model, an assignment of truth and false values to symbols.
-
-We are interested only in the models where the KB is true. If the KB is false, then the conditions that we know to be true are not occurring in these models, making them irrelevant to our case.
-
 ## Implementation
 
-At `logic.py`, we define several classes for different types of logical connectives. These classes can be composed within each other, so an expression like `And(Not(A), Or(B, C))` represents the logical sentence stating that symbol `A` is not true, and that symbol `B` or symbol `C` is true (where “or” here refers to inclusive, not exclusive, or).
+There are two main files in this project,`runner.py`, which contains all of the code to run the graphical interface for the game; and `minesweeper.py`, which contains all of the logic the game itself and for the AI to play the game.
 
-`logic.py` also contains a function `model_check`. `model_check` takes a knowledge base and a query. The knowledge base is a single logical sentence: if multiple logical sentences are known, they can be joined together in an `And` expression. `model_check` recursively considers all possible models using the `check_all` function, and returns `True` if the knowledge base entails the query, and returns `False` otherwise.
+In `minesweeper.py` there are three classes defined, `Minesweeper`, which handles the gameplay; `Sentence`, which represents a logical sentence that contains both a set of cells and a count; and `MinesweeperAI`, which handles inferring which moves to make based on knowledge.
 
-As mentioned, the way the `check_all` function works is recursive. That is, it picks one symbol, creates two models, in one of which the symbol is true and in the other the symbol is false, and then calls itself again, now with two models that differ by the truth assignment of this symbol. The function will keep doing so until all symbols will have been assigned truth-values in the models, leaving the list `symbols` empty. Once it is empty (as identified by the line `if not symbols`), in each instance of the function (wherein each instance holds a different model), the function checks whether the KB is true given the model. If the KB is true in this model, the function checks whether the query is true, as described earlier.
+Each cell is a pair `(i, j)` where `i` is the row number (ranging from `0` to `height - 1`) and `j` is the column number (ranging from `0` to `width - 1`).
 
-<img src="resources/model_check.png" width="1000">
+**The `Sentence` class**
 
-At `puzzle.py`, we define six propositional symbols. `AKnight`, for example, represents the sentence that “A is a knight”, while `AKnave` represents the sentence that “A is a knave.” We similarly define propositional symbols for characters B and C as well.
+This class is used to represent logical sentences of the form described before. Each sentence has a set of `cells` within it and a `count` of how many of those cells are mines. 
 
-What follows are four different knowledge bases, `knowledge0`, `knowledge1`, `knowledge2`, and `knowledge3`, which contain the knowledge needed to deduce the solutions to the upcoming Puzzles 0, 1, 2, and 3, respectively.
+The class also contains functions `known_mines` and `known_safes` for determining if any of the cells in the sentence are known to be mines or known to be safe. 
 
-The `main` function of this `puzzle.py` loops over all puzzles, and uses model checking to compute, given the knowledge for that puzzle, whether each character is a knight or a knave, printing out any conclusions that the model checking algorithm is able to make.
+It also contains functions `mark_mine` and `mark_safe` to update a sentence in response to new information about a cell.
 
-**Representing the puzzles using propositional logic**
+**The `MinesweeperAI` class**
 
-Knowledge engineering is the process of figuring out how to represent propositions and logic in AI.
+This class will implement an AI that can play Minesweeper. The AI class keeps track of a number of values. `self.moves_made` contains a set of all cells already clicked on, so the AI knows not to pick those again. `self.mines` contains a set of all cells known to be mines. `self.safes` contains a set of all cells known to be safe. And `self.knowledge` contains a list of all of the Sentences that the AI knows to be true.
 
-For each knowledge base, we want to encode two different types of information: (1) information about the structure of the problem itself (i.e., information given in the definition of a Knight and Knave puzzle), and (2) information about what the characters actually said.
+The `mark_mine` function adds a cell to `self.mines`, so the AI knows that it is a mine. It also loops over all sentences in the AI’s knowledge and informs each sentence that the cell is a mine, so that the sentence can update itself accordingly if it contains information about that mine. The `mark_safe` function does the same thing, but for safe cells instead.
 
-Considering what it means if a sentence is spoken by a character. Under what conditions is that sentence true? Under what conditions is that sentence false? How can we express that as a logical sentence?
+The `add_knowledge` takes as input a `cell` and its corresponding `count`, and updates `self.mines`, `self.safes`, `self.moves_made`, and `self.knowledge` with any new information that the AI can infer, given that `cell` is known to be a safe cell with `count` mines neighboring it. The function adds a new sentence to the AI’s knowledge base, based on the value of `cell` and `count`, including only cells whose state is still undetermined in the sentence. If, based on any of the sentences in `self.knowledge`, new cells can be marked as safe or as mines, or, new sentences can be inferred (using the subset method described before), then the function does so. 
 
-There are multiple possible knowledge bases for each puzzle that will compute the correct result. We attempt to choose a knowledge base that offers the most direct translation of the information in the puzzle, rather than performing logical reasoning on our own. We should also consider what the most concise representation of the information in the puzzle would be.
+Any time that we make any change to our AI’s knowledge, it may be possible to draw new inferences that weren’t possible before. That's why the function loops over and over until there's no change made, so we can be sure that those new inferences are added to the knowledge base.
 
-For instance, for Puzzle 0, setting `knowledge0 = AKnave` would result in correct output, since through our own reasoning we know 'A' must be a knave. But doing so would be against the spirit of this problem: the goal is to have our AI do the reasoning for us.
+The `make_safe_move` function returns a move `(i, j)` that is known to be safe, and not a move already made. If no safe move can be guaranteed, the function returns `None`. The function don't modify `self.moves_made`, `self.mines`, `self.safes`, or `self.knowledge`.
+
+The `make_random_move` function is called if a safe move is not possible and returns a random move `(i, j)`. The move isn't a move that has already been made or a move that is known to be a mine. If no such moves are possible, the function returns `None`.
+
+When we run our AI (as by clicking “AI Move”), note that it will not always win. There will be some cases where the AI must guess, because it lacks sufficient information to make a safe move. This is to be expected. `runner.py` will print whether the AI is making a move it believes to be safe or whether it is making a random move.
 
 ## Resources
 * [Knowledge - Lecture 1 - CS50's Introduction to Artificial Intelligence with Python 2020][cs50 lecture]
 
 ## Usage
 
-**To solve logic puzzles:** 
+**To install pygame:**
 
-* Inside the `knights` directory: `python puzzle.py`
+* Inside the `minesweeper` directory: `pip3 install -r requirements.txt`
+
+**To play Minesweeper (or let the AI play for you):** 
+
+* Inside the `minesweeper` directory: `python runner.py`
 
 ## Credits
 [*Luis Sanchez*][linkedin] 2020.
 
-Project from the course [CS50's Introduction to Artificial Intelligence with Python 2020][cs50 ai] from HarvardX.
+Project and images from the course [CS50's Introduction to Artificial Intelligence with Python 2020][cs50 ai] from HarvardX.
 
 [cs50 lecture]: https://www.youtube.com/watch?v=LucW-p6zC5c&feature=youtu.be
 [linkedin]: https://www.linkedin.com/in/luis-sanchez-13bb3b189/
