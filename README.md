@@ -6,13 +6,13 @@
 
 Minesweeper is a puzzle game that consists of a grid of cells, where some of the cells contain hidden “mines.” Clicking on a cell that contains a mine detonates the mine, and causes the user to lose the game. Clicking on a “safe” cell reveals a number that indicates how many neighboring cells contain a mine. The goal of the game is to flag each of the mines.
 
-## Propositional Logic
+**Propositional Logic**
 
 Knowledge-based agents make decisions by considering their knowledge base, and making inferences based on that knowledge. One way we could represent an AI’s knowledge about a Minesweeper game is by making each cell a propositional variable that is true if the cell contains a mine, and false otherwise.
 
 The AI would know every time a safe cell is clicked on and would get to see the number of neighboring cells that are mines for that cell.
 
-## Knowledge Representation
+**Knowledge Representation**
 
 We’ll represent each sentence of our AI’s knowledge like the below.
 
